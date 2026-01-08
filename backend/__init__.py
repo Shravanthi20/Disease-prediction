@@ -1,6 +1,17 @@
 from flask import Flask, render_template
 import os
 from datetime import datetime
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Initialize extensions
+db = SQLAlchemy()
+login_manager = LoginManager()
+login_manager.login_view = 'auth.login'
+login_manager.login_message_category = 'info'
 
 def create_app():
     # Get the backend directory (where this __init__.py file is)
@@ -16,10 +27,36 @@ def create_app():
         template_folder=os.path.join(backend_root, 'templates')
     )
     
+    # Configure Database
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key')
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(backend_root, 'site.db')
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+    # Initialize Extensions
+    db.init_app(app)
+    login_manager.init_app(app)
+
+    # Initialize Models (to create tables)
+    with app.app_context():
+        # Import models here to avoid circular imports
+        from backend.models import user_model 
+        db.create_all()
+        pass
+    
     # Register Disease Routes Blueprint
     from backend.routes.disease_routes import disease_bp
     app.register_blueprint(disease_bp)
     print("✅ 'disease_routes' blueprint registered successfully")
+
+    # Register Auth Routes Blueprint
+    from backend.routes.auth_routes import auth_bp
+    app.register_blueprint(auth_bp)
+    print("✅ 'auth_routes' blueprint registered successfully")
+
+    # Register Dashboard Routes Blueprint
+    from backend.routes.dashboard_routes import dashboard_bp
+    app.register_blueprint(dashboard_bp)
+    print("✅ 'dashboard_routes' blueprint registered successfully")
     
     # Register ML Routes Blueprint
     from backend.routes.ml_routes import ml_bp

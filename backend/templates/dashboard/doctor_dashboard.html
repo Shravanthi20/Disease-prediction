@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="mb-4">Doctor Dashboard</h2>
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body">
+                    <h5 class="card-title text-success">Welcome, Dr. {{ current_user.username }}!</h5>
+                    <p class="card-text text-muted">Here you can view the medical history of your registered patients.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow border-0" style="border-radius: 15px;">
+        <div class="card-header bg-success text-white" style="border-radius: 15px 15px 0 0;">
+            <h4 class="mb-0">Patient List</h4>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="p-3">Username</th>
+                            <th class="p-3">Email</th>
+                            <th class="p-3">Age/Gender</th>
+                            <th class="p-3">Blood Group</th>
+                            <th class="p-3">Condition Summary</th>
+                            <th class="p-3">Last Updated</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if patients %}
+                        {% for patient in patients %}
+                        <tr>
+                            <td class="p-3 fw-bold">{{ patient.username }}</td>
+                            <td class="p-3">{{ patient.email }}</td>
+                            <td class="p-3">
+                                {% if patient.medical_history %}
+                                {{ patient.medical_history.age }} / {{ patient.medical_history.gender }}
+                                {% else %}
+                                <span class="text-muted">N/A</span>
+                                {% endif %}
+                            </td>
+                            <td class="p-3">
+                                {% if patient.medical_history %}
+                                {{ patient.medical_history.blood_group }}
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
+                            <td class="p-3">
+                                {% if patient.medical_history %}
+                                <small class="d-block text-truncate" style="max-width: 200px;"
+                                    title="{{ patient.medical_history.chronic_diseases }}">
+                                    <b>Chronic:</b> {{ patient.medical_history.chronic_diseases or 'None' }}
+                                </small>
+                                <small class="d-block text-truncate" style="max-width: 200px;"
+                                    title="{{ patient.medical_history.allergies }}">
+                                    <b>Allergies:</b> {{ patient.medical_history.allergies or 'None' }}
+                                </small>
+                                {% else %}
+                                <span class="badge bg-warning text-dark">No History</span>
+                                {% endif %}
+                            </td>
+                            <td class="p-3">
+                                {% if patient.medical_history %}
+                                {{ patient.medical_history.updated_at.strftime('%Y-%m-%d') }}
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center p-5 text-muted">No patients found.</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -11,3 +11,5 @@ scikit-learn
 reportlab
 streamlit
 plotly
+flask-sqlalchemy
+flask-login

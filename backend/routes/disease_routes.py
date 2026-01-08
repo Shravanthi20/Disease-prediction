@@ -37,9 +37,14 @@ def load_diseases():
 
 @disease_bp.route("/")
 def home():
-    """Render the home page with ML Prediction"""
+    """Render the Landing Page"""
+    return render_template("home.html")
+
+@disease_bp.route("/prediction")
+def prediction():
+    """Render the ML Prediction Tool"""
     diseases = load_diseases()
-    return render_template("home.html", diseases=diseases)
+    return render_template("prediction.html", diseases=diseases)
 
 
 @disease_bp.route("/calculator")
